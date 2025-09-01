@@ -11,7 +11,8 @@ export default function SkillsWordCloud({ items = cloudSkills }: Props) {
   const skills = useMemo(() => items.slice().sort(() => Math.random() - 0.5), [items]);
 
   useEffect(() => {
-    const wrap = wrapRef.current!;
+    const wrap = wrapRef.current;
+    if (!wrap) return;
     const bounds = wrap.getBoundingClientRect();
     const placed: DOMRect[] = [];
 

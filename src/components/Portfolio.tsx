@@ -36,8 +36,9 @@ const Portfolio: React.FC = () => {
     }
   }, [openId]);
 
+  const sectionRef = ref as any;
   return (
-    <section id="projects" ref={ref as any} className="verse-section-alt">
+    <section id="projects" ref={sectionRef} className="verse-section-alt">
       <div className="verse-container">
         <h2 className="verse-heading"><Typewriter text="Projects" trigger={inView} /></h2>
         <p className="projects-graffiti-sub" style={{marginTop: 0}}>

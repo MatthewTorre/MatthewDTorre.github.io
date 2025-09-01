@@ -54,7 +54,10 @@ export const ExperienceTimeline: React.FC<Props> = ({ items, groupByYear = true,
   }, [items, activeCat]);
 
   const groups = useMemo(() => {
-    if (!groupByYear) return { all: filtered } as any;
+    if (!groupByYear) {
+      const r: Record<string, Experience[]> = { all: filtered };
+      return r;
+    }
     const g: Record<string, Experience[]> = {};
     for (const it of filtered) {
       const y = (it.start || it.datesLabel || '').slice(0, 4) || 'Other';

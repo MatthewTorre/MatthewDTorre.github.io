@@ -18,9 +18,11 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
   const reduceMotion = (typeof window !== "undefined" && !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) || staticMode;
 
   useEffect(() => {
-    const wrap = wrapRef.current!;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d", { alpha: true })!;
+    const wrap = wrapRef.current;
+    const canvas = canvasRef.current;
+    if (!wrap || !canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
 
     // Behind cards
     wrap.style.position = "absolute";

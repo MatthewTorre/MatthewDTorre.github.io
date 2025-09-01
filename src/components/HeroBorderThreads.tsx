@@ -9,13 +9,14 @@ const HeroBorderThreads: React.FC = () => {
   useEffect(() => {
     const svg = ref.current;
     if (!svg) return;
+    const parent: Element = (svg.parentElement || svg);
     const ro = new ResizeObserver(() => {
-      const r = svg.parentElement!.getBoundingClientRect();
+      const r = parent.getBoundingClientRect();
       svg.setAttribute('viewBox', `0 0 ${r.width} ${r.height}`);
       svg.setAttribute('width', String(r.width));
       svg.setAttribute('height', String(r.height));
     });
-    ro.observe(svg.parentElement as Element);
+    ro.observe(parent);
     
     let raf: number | null = null;
     const t0 = performance.now();

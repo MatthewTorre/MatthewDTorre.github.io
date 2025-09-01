@@ -35,8 +35,10 @@ export default function SpideyWebBackground() {
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext('2d', { alpha: true })!;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
     let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     let width = 0, height = 0;
 

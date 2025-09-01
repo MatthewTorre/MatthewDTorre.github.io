@@ -10,8 +10,9 @@ import '../styles/skills-verse.css';
 const Skills: React.FC = () => {
   const { ref, inView } = useInView();
 
+  const sectionRef = ref as any;
   return (
-    <section id="skills" ref={ref as any} className="verse-section skills-section">
+    <section id="skills" ref={sectionRef} className="verse-section skills-section">
       {/* Spider‑Verse ambient background */}
       <SkillsVerse density={0.45} />
       <div className="verse-container">

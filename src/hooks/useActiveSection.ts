@@ -6,7 +6,7 @@ export function useActiveSection(ids: string[], options?: IntersectionObserverIn
   useEffect(() => {
     const elements = ids
       .map((id) => document.getElementById(id))
-      .filter((el) => !!el) as any[];
+      .filter((el): el is HTMLElement => !!el);
 
     if (elements.length === 0) return;
 

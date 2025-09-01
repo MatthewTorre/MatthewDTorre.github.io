@@ -4,8 +4,9 @@ import { useInView } from '../hooks/useInView';
 
 const Contact: React.FC = () => {
   const { ref, inView } = useInView();
+  const sectionRef = ref as any;
   return (
-    <section id="contact" ref={ref as any} className="verse-section">
+    <section id="contact" ref={sectionRef} className="verse-section">
       <div className="verse-container">
         <h2 className="verse-heading"><Typewriter text="Contact Me" trigger={inView} /></h2>
         <form className="verse-form" onSubmit={(e) => e.preventDefault()}>

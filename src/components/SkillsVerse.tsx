@@ -8,9 +8,11 @@ export default function SkillsVerse({ density = 0.8 }: { density?: number }) {
   const reduce = typeof window !== 'undefined' && !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   useEffect(() => {
-    const wrap = wrapRef.current!;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext('2d', { alpha: true })!;
+    const wrap = wrapRef.current;
+    const canvas = canvasRef.current;
+    if (!wrap || !canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
 
     wrap.style.position = 'absolute';
     wrap.style.inset = '0';

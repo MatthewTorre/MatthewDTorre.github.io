@@ -12,8 +12,9 @@ const Hero: React.FC = () => {
   // Use imported asset for reliable bundling
   const imgSrc = PortraitImg;
 
+  const sectionRef = ref as any;
   return (
-    <section id="hero" ref={ref as any} className="hero hero-section" aria-label="Introduction">
+    <section id="hero" ref={sectionRef} className="hero hero-section" aria-label="Introduction">
       <div className="hero-inner">
         <HeroBorderThreads />
         {/* Left content */}
