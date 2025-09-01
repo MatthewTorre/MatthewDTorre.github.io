@@ -7,8 +7,9 @@ const About: React.FC = () => {
   const { ref, inView } = useInView();
   // simplified About: no mode/callouts
 
+  const sectionRef = ref as any;
   return (
-    <section id="about" ref={ref as any} className="about-verse-section">
+    <section id="about" ref={sectionRef} className="about-verse-section">
       <div className="about-verse-container">
         <p className="verse-kicker">INTRODUCTION</p>
 

@@ -74,8 +74,7 @@ function CertCard({ c }: { c: Certification }) {
                 <li key={label} className="skill-chip" title={label}>{label}</li>
               );
             })}
-          ))}
-          {skills.length > 5 ? <li className="skill-chip more">+{skills.length - 5}</li> : null}
+            {skills.length > 5 ? <li className="skill-chip more">+{skills.length - 5}</li> : null}
           </ul>
         ) : null}
       </div>
