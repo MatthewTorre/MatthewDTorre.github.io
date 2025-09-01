@@ -1,0 +1,2 @@
+.skills-prisms{ position: relative; min-height: clamp(560px, 70vh, 900px); isolation: isolate; }
+.skills-prisms canvas{ position: absolute; inset: 0; z-index: 0; pointer-events: none; }

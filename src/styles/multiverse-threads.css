@@ -1,0 +1,17 @@
+.projects-section { position: relative; }
+.mv-threads-wrap { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.mv-threads-canvas { width: 100%; height: 100%; display: block; }
+.project-card { position: relative; z-index: 1; display: flex; flex-direction: column; box-sizing: border-box; height: auto; }
+
+/* Aligned grid inside Projects */
+#projects .card-grid,
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+/* Let content define height; avoid clipping */
+.project-card .card-body { overflow: visible; }
+.project-card .card-content, .project-card .project-details-wrap { overflow: visible; }

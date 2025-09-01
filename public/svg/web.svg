@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60" fill="none">
+  <defs>
+    <style>
+      .w { stroke: currentColor; stroke-opacity: .36; stroke-width: 2; fill: none; }
+    </style>
+  </defs>
+  <path class="w" d="M10 30 C45 10 60 10 110 30"/>
+  <path class="w" d="M20 30 C50 20 60 20 100 30"/>
+  <path class="w" d="M30 30 C55 26 65 26 90 30"/>
+</svg>

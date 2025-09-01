@@ -1,0 +1,60 @@
+.graffiti-callout{
+  --mx:50%; --my:50%;
+  --spray: color-mix(in oklab, var(--primary, #5bb6ff) 55%, transparent);
+  --paper: var(--card, #1b1f2a);
+  --stroke: color-mix(in oklab, var(--foreground, #d7dce2) 28%, transparent);
+
+  position: relative; isolation: isolate;
+  display: inline-flex; align-items:center; justify-content:center;
+  padding:.5rem 1rem; border-radius:20px;
+  background: var(--paper);
+  outline:2px solid var(--stroke); outline-offset:3px;
+  box-shadow: var(--shadow-md, 0 10px 24px rgba(0,0,0,0.35));
+  cursor:pointer; user-select:none;
+  transform: rotate(-.4deg);
+  transition: transform .18s cubic-bezier(.2,.9,.2,1), filter .18s, background .18s;
+}
+.graffiti-callout .gc__label{
+  font-family: var(--font-display, var(--font-brand, inherit));
+  font-weight: 900; letter-spacing:.02em;
+  text-transform: none;
+  text-shadow: 1px 1px 0 var(--background, #0b0d10), -1px -1px 0 var(--background, #0b0d10);
+}
+
+/* halftone layer */
+.graffiti-callout::before{
+  content:""; position:absolute; inset:-6px; border-radius:24px; z-index:-1; pointer-events:none;
+  opacity:.12;
+  background-image:
+    radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--foreground, #d7dce2) 20%, transparent) 1px, transparent 1.6px);
+  background-size:9px 9px;
+}
+/* spray glow follows mouse */
+.graffiti-callout::after{
+  content:""; position:absolute; inset:-8px; border-radius:26px; z-index:-1; pointer-events:none;
+  opacity:0; filter: blur(6px);
+  background: radial-gradient(130px 90px at var(--mx) var(--my), var(--spray), transparent 60%);
+  transition: opacity .18s ease;
+}
+
+.graffiti-callout:hover{ transform: translateY(-2px) rotate(-.8deg); }
+.graffiti-callout:hover::after{ opacity:.55; }
+.graffiti-callout:active{ transform: translateY(0) scale(.98); }
+
+/* Selected/pressed state */
+.graffiti-callout.is-pressed{
+  background: color-mix(in oklab, var(--paper) 85%, var(--primary, #5bb6ff) 6%);
+  box-shadow: 0 0 .6rem color-mix(in oklab, var(--primary, #5bb6ff) 32%, transparent);
+}
+.graffiti-callout.is-pressed::after{ opacity:.38; }
+
+/* Variant tints */
+.graffiti-callout[data-variant="product"]{ --spray: color-mix(in oklab, var(--primary, #5bb6ff) 60%, transparent); }
+.graffiti-callout[data-variant="ai"]{ --spray: color-mix(in oklab, var(--secondary, #a78bfa) 55%, transparent); }
+.graffiti-callout[data-variant="se"]{ --spray: color-mix(in oklab, var(--accent, #22d3ee) 55%, transparent); }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .graffiti-callout, .graffiti-callout::after { transition:none !important; }
+}
+

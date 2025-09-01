@@ -1,0 +1,22 @@
+.flip-root{ position: relative; width: 100%; height: 320px; perspective: 1200px; }
+.flip-inner{ position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .7s ease-out; }
+.flip-inner.is-flipped{ transform: rotateY(180deg); }
+.flip-face{ position: absolute; inset: 0; backface-visibility: hidden; border-radius: 14px; overflow: hidden; }
+.flip-front{ background: radial-gradient(120% 140% at 20% 10%, #1b1f2a, #0b0f16); color: #e5e7eb; border: 1px solid #2a3140; padding: 16px; display: grid; grid-template-rows: auto 1fr auto; }
+.flip-back{ transform: rotateY(180deg); background: #0b0f16; color: #e5e7eb; border: 1px solid #2a3140; padding: 16px; overflow: auto; }
+
+/* Synced-In demo visuals */
+.syn-card{ max-width: 420px; }
+.syn-front .syn-head{ display: flex; align-items: center; gap: 10px; }
+.syn-front .syn-bubble{ width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(236,72,153,.18); border: 2px solid rgba(236,72,153,.4); color: #f0abfc; font-weight: 900; }
+.syn-front .syn-title h3{ margin: 0; font-weight: 900; letter-spacing: .2px; }
+.syn-front .syn-title p{ margin: 0; color: #94a3b8; font-size: .85rem; }
+.syn-front .syn-tags{ margin-top: 10px; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+.syn-front .syn-chip{ border: 1px solid #ffffff26; color: #cbd5e1; border-radius: 999px; padding: 4px 8px; text-align: center; font-size: .8rem; }
+.syn-front .syn-footer{ margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; color: #a1a1aa; font-size: .85rem; }
+
+.syn-back h4{ margin: 0 0 8px 0; font-weight: 900; }
+.syn-back p{ margin: 0 0 8px 0; color: #cbd5e1; }
+.syn-skill-wrap{ margin-top: 8px; border-top: 1px solid #ffffff1a; padding-top: 8px; }
+.syn-skill-title{ margin: 0 0 6px 0; text-transform: uppercase; font-weight: 800; letter-spacing: .04em; color: #cbd5e1; font-size: .85rem; }
+

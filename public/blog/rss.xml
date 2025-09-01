@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Matthew Torre — Blog</title>
+    <link>/#/blog</link>
+    <description>Personal blog feed</description>
+    <item>
+      <title>Synced-In (Synchrony Hackathon)</title>
+      <link>/#/blog/2025/08/synced-in-synchrony-hackathon</link>
+      <pubDate>Sat, 30 Aug 2025 00:00:00 +0000</pubDate>
+      <description>AI-powered internal expert search with RAG, semantic search, and modular APIs.</description>
+    </item>
+  </channel>
+</rss>
