@@ -19,21 +19,18 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: personal-portfolio/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install deps
-        working-directory: personal-portfolio
         run: npm ci
 
       - name: Build
-        working-directory: personal-portfolio
         env:
           NODE_OPTIONS: --openssl-legacy-provider
           TSC_COMPILE_ON_ERROR: 'true'
         run: npm run build
 
       - name: Copy .nojekyll
-        working-directory: personal-portfolio
         run: |
           cp -f public/.nojekyll build/.nojekyll || true
 
@@ -42,8 +39,7 @@ jobs:
         with:
           repository-name: MatthewDTorre/MatthewDTorre.github.io
           branch: main
-          folder: personal-portfolio/build
+          folder: build
           clean: true
           single-commit: true
           token: ${{ secrets.PAGES_TOKEN }}
-
