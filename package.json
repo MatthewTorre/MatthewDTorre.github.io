@@ -1,11 +1,14 @@
 {
   "name": "personal-portfolio",
+  "homepage": "https://MatthewDTorre.github.io",
   "version": "1.0.0",
   "description": "A personal portfolio website to showcase projects and skills.",
   "main": "src/index.tsx",
   "scripts": {
-    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "start": "TSC_COMPILE_ON_ERROR=true NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
+    "build": "TSC_COMPILE_ON_ERROR=true NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build -b main -r ${GH_REPO:-https://github.com/MatthewDTorre/MatthewDTorre.github.io.git}",
     "test": "NODE_OPTIONS=--openssl-legacy-provider react-scripts test",
     "eject": "react-scripts eject",
     "new:post": "node ./scripts/new-post.js \"New Blog Post\""
@@ -19,14 +22,15 @@
   "license": "MIT",
   "dependencies": {
     "aos": "^2.3.4",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "typescript": "^4.1.2"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1",
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2"
+    "@types/react": "^18.2.46",
+    "@types/react-dom": "^18.2.18",
+    "gh-pages": "^6.3.0"
   },
   "browserslist": {
     "production": [

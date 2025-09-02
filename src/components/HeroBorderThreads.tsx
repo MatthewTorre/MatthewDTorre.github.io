@@ -9,19 +9,20 @@ const HeroBorderThreads: React.FC = () => {
   useEffect(() => {
     const svg = ref.current;
     if (!svg) return;
+    const svgEl = svg as SVGSVGElement; // non-null after guard
     const parent: Element = (svg.parentElement || svg);
     const ro = new ResizeObserver(() => {
       const r = parent.getBoundingClientRect();
-      svg.setAttribute('viewBox', `0 0 ${r.width} ${r.height}`);
-      svg.setAttribute('width', String(r.width));
-      svg.setAttribute('height', String(r.height));
+      svgEl.setAttribute('viewBox', `0 0 ${r.width} ${r.height}`);
+      svgEl.setAttribute('width', String(r.width));
+      svgEl.setAttribute('height', String(r.height));
     });
     ro.observe(parent);
     
     let raf: number | null = null;
     const t0 = performance.now();
     function step(t: number) {
-      const r = svg.getBoundingClientRect();
+      const r = svgEl.getBoundingClientRect();
       const w = r.width, h = r.height; const inset = 12;
       const L = 2 * ((w - 2 * inset) + (h - 2 * inset));
 
