@@ -15,31 +15,34 @@ export default function SkillsPrisms({ items = DEFAULT_SKILLS, size = 150, k = 2
   const data = useMemo(() => items, [items]);
 
   useEffect(() => {
-    const wrap = wrapRef.current!;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext('2d', { alpha: true })!;
+  const wrap = wrapRef.current;
+  const canvas = canvasRef.current;
+  if (!wrap || !canvas) return;
+  const ctx = canvas.getContext('2d', { alpha: true }) as CanvasRenderingContext2D;
+  const c = canvas;
+  const parentEl = wrap;
 
-    wrap.style.position = 'relative';
-    canvas.style.position = 'absolute';
-    canvas.style.inset = '0';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '0';
+  wrap.style.position = 'relative';
+  c.style.position = 'absolute';
+  c.style.inset = '0';
+  c.style.pointerEvents = 'none';
+  c.style.zIndex = '0';
 
-    const DPR = () => window.devicePixelRatio || 1;
+  const DPR = () => window.devicePixelRatio || 1;
 
     const resize = () => {
-      const rect = wrap.getBoundingClientRect();
+      const rect = parentEl.getBoundingClientRect();
       const dpr = DPR();
-      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-      canvas.style.width = rect.width + 'px';
-      canvas.style.height = rect.height + 'px';
+      c.width = Math.max(1, Math.floor(rect.width * dpr));
+      c.height = Math.max(1, Math.floor(rect.height * dpr));
+      c.style.width = rect.width + 'px';
+      c.style.height = rect.height + 'px';
       seed(rect.width, rect.height);
       computeEdges();
       step(0);
     };
 
-    const ro = new ResizeObserver(resize); ro.observe(wrap);
+  const ro = new ResizeObserver(resize); ro.observe(parentEl);
 
     function rand(min: number, max: number) { return min + Math.random() * (max - min); }
 
@@ -101,14 +104,15 @@ export default function SkillsPrisms({ items = DEFAULT_SKILLS, size = 150, k = 2
     }
 
     function step(ts: number) {
-      const dpr = DPR(); ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const rect = wrap.getBoundingClientRect(); const W = rect.width; const H = rect.height;
+      if (!parentEl || !c) return;
+      const dpr = DPR(); ctx.clearRect(0, 0, c.width, c.height);
+      const rect = parentEl.getBoundingClientRect(); const W = rect.width; const H = rect.height;
       for (const n of nodes.current) { if (!reduced) { n.x += n.vx; n.y += n.vy; if (n.x < n.r * 0.55 || n.x > W - n.r * 0.55) n.vx *= -1; if (n.y < n.r * 0.55 || n.y > H - n.r * 0.55) n.vy *= -1; if (hoverId === n.id) { n.x -= n.vx * 0.6; n.y -= n.vy * 0.6; } } }
       drawThreads(ts); for (const n of nodes.current) drawPrism(n, ts);
       if (!reduced) rafRef.current = requestAnimationFrame(step);
     }
 
-    function onMove(ev: PointerEvent) { const rect = wrap.getBoundingClientRect(); const mx = ev.clientX - rect.left, my = ev.clientY - rect.top; let hit: string | null = null; for (const n of nodes.current) { if (Math.hypot(mx - n.x, my - n.y) < n.r * 0.55) { hit = n.id; break; } } setHoverId(hit); }
+  function onMove(ev: PointerEvent) { if (!wrap) return; const rect = wrap.getBoundingClientRect(); const mx = ev.clientX - rect.left, my = ev.clientY - rect.top; let hit: string | null = null; for (const n of nodes.current) { if (Math.hypot(mx - n.x, my - n.y) < n.r * 0.55) { hit = n.id; break; } } setHoverId(hit); }
     function onLeave() { setHoverId(null); }
 
     wrap.addEventListener('pointermove', onMove); wrap.addEventListener('pointerleave', onLeave);

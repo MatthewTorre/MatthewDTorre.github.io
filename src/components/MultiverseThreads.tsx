@@ -18,11 +18,14 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
   const reduceMotion = (typeof window !== "undefined" && !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) || staticMode;
 
   useEffect(() => {
-    const wrap = wrapRef.current;
-    const canvas = canvasRef.current;
-    if (!wrap || !canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
+  const wrap = wrapRef.current;
+  const canvas = canvasRef.current;
+  if (!wrap || !canvas) return;
+  const ctx = canvas.getContext("2d", { alpha: true }) as CanvasRenderingContext2D;
+  // local non-null aliases for closures
+  const parentEl = wrap.parentElement ?? wrap;
+  const c = canvas;
+  const ctx2 = ctx;
 
     // Behind cards
     wrap.style.position = "absolute";
@@ -30,8 +33,8 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
     wrap.style.pointerEvents = "none";
     wrap.style.zIndex = "0";
 
-    const ro = new ResizeObserver(() => resize());
-    ro.observe(wrap.parentElement || wrap);
+  const ro = new ResizeObserver(() => resize());
+  ro.observe(parentEl);
 
     const cardsRO = new ResizeObserver(() => rebuildGraph());
     document.querySelectorAll(cardSelector).forEach(el => cardsRO.observe(el));
@@ -39,25 +42,25 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
     function DPR() { return Math.max(1, Math.min(2, window.devicePixelRatio || 1)); }
 
     function resize() {
-      const rect = (wrap.parentElement || wrap).getBoundingClientRect();
+      const rect = parentEl.getBoundingClientRect();
       const dpr = DPR();
-      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-      canvas.style.width = rect.width + "px";
-      canvas.style.height = rect.height + "px";
+      c.width = Math.max(1, Math.floor(rect.width * dpr));
+      c.height = Math.max(1, Math.floor(rect.height * dpr));
+      c.style.width = rect.width + "px";
+      c.style.height = rect.height + "px";
       rebuildGraph();
       draw(0);
     }
 
     function getCards(): Element[] {
-      const parent = wrap.parentElement || document;
+      const parent = parentEl || document;
       return Array.from(parent.querySelectorAll(cardSelector));
     }
 
     function centerOf(el: Element) {
-      const parent = wrap.parentElement!.getBoundingClientRect();
+      const parentRect = parentEl.getBoundingClientRect();
       const r = (el as HTMLElement).getBoundingClientRect();
-      return { x: r.left - parent.left + r.width / 2, y: r.top - parent.top + Math.min(r.height / 2, 160) };
+      return { x: r.left - parentRect.left + r.width / 2, y: r.top - parentRect.top + Math.min(r.height / 2, 160) };
     }
 
     function rebuildGraph() {
@@ -83,10 +86,10 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
     }
 
     function glowStroke(w: number, color: string) {
-      ctx.lineWidth = w; ctx.strokeStyle = color; ctx.shadowBlur = w * 1.25; ctx.shadowColor = color; ctx.globalCompositeOperation = "lighter";
+      ctx2.lineWidth = w; ctx2.strokeStyle = color; ctx2.shadowBlur = w * 1.25; ctx2.shadowColor = color; ctx2.globalCompositeOperation = "lighter";
     }
     function lineCore(w: number, color: string) {
-      ctx.lineWidth = w; ctx.strokeStyle = color; ctx.shadowBlur = 0; ctx.globalCompositeOperation = "lighter";
+      ctx2.lineWidth = w; ctx2.strokeStyle = color; ctx2.shadowBlur = 0; ctx2.globalCompositeOperation = "lighter";
     }
 
     function bezierFrom(a: { x: number; y: number }, b: { x: number; y: number }, t: number, seed: number) {
@@ -103,18 +106,18 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
 
     function draw(ts: number) {
       const dpr = DPR();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx2.clearRect(0, 0, c.width, c.height);
       const nodes = nodesRef.current; const edges = edgesRef.current;
 
       // node glows
-      ctx.globalCompositeOperation = "lighter";
+      ctx2.globalCompositeOperation = "lighter";
       for (const p of nodes) {
         const r = 12 * dpr;
-        const g = ctx.createRadialGradient(p.x * dpr, p.y * dpr, 0, p.x * dpr, p.y * dpr, r);
+        const g = ctx2.createRadialGradient(p.x * dpr, p.y * dpr, 0, p.x * dpr, p.y * dpr, r);
         g.addColorStop(0, "rgba(160,200,255,0.75)");
         g.addColorStop(1, "rgba(160,200,255,0)");
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(p.x * dpr, p.y * dpr, r, 0, Math.PI * 2); ctx.fill();
+        ctx2.fillStyle = g;
+        ctx2.beginPath(); ctx2.arc(p.x * dpr, p.y * dpr, r, 0, Math.PI * 2); ctx2.fill();
       }
 
       for (const e of edges) {
@@ -122,15 +125,15 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
         const { c1x, c1y, c2x, c2y } = bezierFrom(a, b, ts, e.seed);
         // Animated hue per edge
         const hue = (e.seed * 137.5 + ts * 0.02) % 360;
-        ctx.beginPath();
-        ctx.moveTo(a.x * dpr, a.y * dpr);
-        ctx.bezierCurveTo(c1x * dpr, c1y * dpr, c2x * dpr, c2y * dpr, b.x * dpr, b.y * dpr);
+  ctx2.beginPath();
+  ctx2.moveTo(a.x * dpr, a.y * dpr);
+  ctx2.bezierCurveTo(c1x * dpr, c1y * dpr, c2x * dpr, c2y * dpr, b.x * dpr, b.y * dpr);
         // layered glow with triadic hues
-        glowStroke(6 * dpr, `hsla(${(hue + 260) % 360}, 100%, 65%, 0.42)`); ctx.stroke();
-        glowStroke(4 * dpr, `hsla(${(hue + 160) % 360}, 100%, 60%, 0.32)`); ctx.stroke();
-        glowStroke(3 * dpr, `hsla(${(hue + 40) % 360}, 100%, 64%, 0.28)`); ctx.stroke();
-        // core
-        lineCore(1.4 * dpr, `hsla(${hue}, 100%, 95%, 0.95)`); ctx.stroke();
+  glowStroke(6 * dpr, `hsla(${(hue + 260) % 360}, 100%, 65%, 0.42)`); ctx2.stroke();
+  glowStroke(4 * dpr, `hsla(${(hue + 160) % 360}, 100%, 60%, 0.32)`); ctx2.stroke();
+  glowStroke(3 * dpr, `hsla(${(hue + 40) % 360}, 100%, 64%, 0.28)`); ctx2.stroke();
+  // core
+  lineCore(1.4 * dpr, `hsla(${hue}, 100%, 95%, 0.95)`); ctx2.stroke();
 
         // pulse orbs in edge hue
         const phase = (ts * 0.00025 + (e.seed % 1)) % 1;
@@ -139,10 +142,10 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
           const t = (phase + i / pcount) % 1;
           const x = cubicAt(a.x, c1x, c2x, b.x, t);
           const y = cubicAt(a.y, c1y, c2y, b.y, t);
-          const grad = ctx.createRadialGradient(x * dpr, y * dpr, 0, x * dpr, y * dpr, 20 * dpr);
+          const grad = ctx2.createRadialGradient(x * dpr, y * dpr, 0, x * dpr, y * dpr, 20 * dpr);
           grad.addColorStop(0, `hsla(${hue}, 100%, 80%, 0.95)`);
           grad.addColorStop(1, `hsla(${hue}, 100%, 80%, 0)`);
-          ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(x * dpr, y * dpr, 20 * dpr, 0, Math.PI * 2); ctx.fill();
+          ctx2.fillStyle = grad; ctx2.beginPath(); ctx2.arc(x * dpr, y * dpr, 20 * dpr, 0, Math.PI * 2); ctx2.fill();
         }
       }
 
@@ -154,7 +157,7 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
     }
 
     function onMove(ev: MouseEvent) {
-      const parent = wrap.parentElement!.getBoundingClientRect();
+      const parent = parentEl.getBoundingClientRect();
       mouse.current.x = ev.clientX - parent.left; mouse.current.y = ev.clientY - parent.top; mouse.current.active = true;
     }
     function onLeave() { mouse.current.active = false; }

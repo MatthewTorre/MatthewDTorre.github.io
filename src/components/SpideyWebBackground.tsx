@@ -34,11 +34,10 @@ export default function SpideyWebBackground() {
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
+    const ctx = canvas.getContext('2d', { alpha: true }) as CanvasRenderingContext2D;
     let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     let width = 0, height = 0;
 
@@ -55,8 +54,9 @@ export default function SpideyWebBackground() {
     let paused = document.visibilityState === 'hidden';
 
     function resize() {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      if (!canvas) return;
+      const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
       dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
       width = Math.floor(vw * dpr);
       height = Math.floor(vh * dpr);
