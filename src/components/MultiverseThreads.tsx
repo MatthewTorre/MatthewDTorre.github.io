@@ -15,7 +15,8 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
   const mouse = useRef<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
   const nodesRef = useRef<{ x: number; y: number; el: Element }[]>([]);
   const edgesRef = useRef<{ a: number; b: number; seed: number }[]>([]);
-  const reduceMotion = (typeof window !== "undefined" && !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) || staticMode;
+  const smallScreen = typeof window !== "undefined" && window.innerWidth < 1024;
+  const reduceMotion = (typeof window !== "undefined" && !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) || staticMode || smallScreen;
 
   useEffect(() => {
   const wrap = wrapRef.current;
@@ -162,15 +163,19 @@ export default function MultiverseThreads({ cardSelector = ".project-card", hove
     }
     function onLeave() { mouse.current.active = false; }
 
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseleave", onLeave);
+    if (!reduceMotion) {
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseleave", onLeave);
+    }
 
     resize();
     if (!reduceMotion) rafRef.current = requestAnimationFrame(draw); else draw(0);
 
     return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseleave", onLeave);
+      if (!reduceMotion) {
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseleave", onLeave);
+      }
       ro.disconnect(); cardsRO.disconnect(); if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [cardSelector, hoverAttract, k, chainStride]);

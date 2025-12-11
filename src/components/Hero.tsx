@@ -36,7 +36,7 @@ const Hero: React.FC = () => {
         <div className="hero-right" aria-hidden="true">
           <div className="hero-photo-wrap">
             <figure className="portrait-card" aria-label="Profile portrait frame">
-              <img src={imgSrc} className="portrait-img" alt="Matthew Torre portrait" />
+              <img src={imgSrc} className="portrait-img" alt="Matthew Torre portrait" loading="lazy" />
               <span className="portrait-accent ring ring--blue" aria-hidden />
               <span className="portrait-accent ring ring--red" aria-hidden />
               <span className="portrait-dots" aria-hidden />

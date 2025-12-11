@@ -22,7 +22,7 @@
 
 /* FX layers under content */
 .xp-card__fx { position: absolute; inset: -6px; pointer-events: none; z-index: -1; }
-.fx-halftone { opacity: .10; background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--primary, #5bb6ff) 22%, transparent) 1px, transparent 1.6px); background-size: 10px 10px; }
+.fx-halftone { display: none; } /* remove dotted/halftone overlay */
 .fx-splatter { opacity: .16; }
 .fx-splatter-img { position: absolute; pointer-events: none; filter: none; transform: scale(.96); transition: transform .28s ease, opacity .28s ease; }
 .fx-splatter-img.s1 { left: 8%; top: 14%; width: 40%; height: auto; }

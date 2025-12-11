@@ -12,14 +12,14 @@ export const spideyWebConfig: {
   halftone: boolean;
   effectsLevel: 'low' | 'medium' | 'high';
 } = {
-  density: 1.0, // node count multiplier
-  maxNeighborDist: 120, // px (logical, before DPR)
+  density: 0.7, // node count multiplier (lower to ease CPU/GPU)
+  maxNeighborDist: 110, // px (logical, before DPR)
   neighbors: 3,
-  rippleInterval: 60,
+  rippleInterval: 90,
   rippleLifeMs: 900,
   clickPulseLifeMs: 1400,
   spring: { k: 0.08, damp: 0.12 },
-  brightnessBoost: 0.4,
+  brightnessBoost: 0.3,
   halftone: true,
   effectsLevel: 'medium',
 };
@@ -34,7 +34,7 @@ export default function SpideyWebBackground() {
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = true; // force static mode for performance
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d', { alpha: true }) as CanvasRenderingContext2D;
@@ -52,6 +52,19 @@ export default function SpideyWebBackground() {
     let ripples: Ripple[] = [];
     let lastMove = 0;
     let paused = document.visibilityState === 'hidden';
+
+    if (reduce) {
+      const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      width = Math.floor(vw * dpr);
+      height = Math.floor(vh * dpr);
+      canvas.width = width;
+      canvas.height = height;
+      canvas.style.width = vw + 'px';
+      canvas.style.height = vh + 'px';
+      return;
+    }
 
     function resize() {
       if (!canvas) return;
@@ -147,7 +160,9 @@ export default function SpideyWebBackground() {
         for (const r of ripples) {
           const age = (t - r.t0) / r.life;
           if (age < 0 || age > 1) continue;
-          const rad = (r.big ? 240 : 140) * easeOutCubic(age) * dpr * levelScale();
+          const rawRad = (r.big ? 240 : 140) * easeOutCubic(age) * dpr * levelScale();
+          const rad = Math.max(0, rawRad);
+          if (!rad) continue;
           const dx = p.x - r.x; const dy = p.y - r.y; const d = Math.hypot(dx, dy);
           if (d < rad) {
             const push = (1 - d / rad) * 6 * dpr; // 2–6px push
@@ -177,7 +192,9 @@ export default function SpideyWebBackground() {
           for (const r of ripples) {
             const age = (t - r.t0) / r.life;
             if (age < 0 || age > 1) continue;
-            const rad = (r.big ? 260 : 160) * easeOutCubic(age) * dpr * levelScale();
+            const rawRad = (r.big ? 260 : 160) * easeOutCubic(age) * dpr * levelScale();
+            const rad = Math.max(0, rawRad);
+            if (!rad) continue;
             const midx = (p.x + q.x) / 2, midy = (p.y + q.y) / 2;
             const dd = Math.hypot(midx - r.x, midy - r.y);
             if (dd < rad) { a += spideyWebConfig.brightnessBoost * (1 - dd / rad); }
@@ -200,7 +217,9 @@ export default function SpideyWebBackground() {
         const r = ripples[i];
         const age = (t - r.t0) / r.life;
         if (age >= 1) { ripples.splice(i, 1); continue; }
-        const rad = (r.big ? 260 : 160) * easeOutCubic(age) * dpr * levelScale();
+        const rawRad = (r.big ? 260 : 160) * easeOutCubic(age) * dpr * levelScale();
+        const rad = Math.max(0, rawRad);
+        if (!rad) continue;
         ctx.strokeStyle = alpha(primary.trim() || '#5bb6ff', 0.18 * (1 - age));
         ctx.lineWidth = Math.max(1, 1.5 * dpr);
         ctx.beginPath(); ctx.arc(r.x, r.y, rad, 0, Math.PI * 2); ctx.stroke();
@@ -243,7 +262,7 @@ export default function SpideyWebBackground() {
   return (
     <div className="spidey-web-layer" aria-hidden role="presentation" tabIndex={-1}>
       <canvas ref={canvasRef} />
-      {spideyWebConfig.halftone && <div className="spidey-web-halftone" aria-hidden />}
+      {/* Halftone removed per request */}
     </div>
   );
 }

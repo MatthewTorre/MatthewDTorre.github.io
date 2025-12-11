@@ -20,7 +20,6 @@ const Header: React.FC<Props> = ({ active }) => {
             <li><a className={active === 'certs' ? 'active' : ''} href="#certs">Certifications</a></li>
             <li><a className={active === 'skills' ? 'active' : ''} href="#skills">Skills</a></li>
             <li><a className={active === 'projects' ? 'active' : ''} href="#projects">Projects</a></li>
-            <li><a href="#/blog">Blog</a></li>
             <li><a className={active === 'contact' ? 'active' : ''} href="#contact">Contact</a></li>
           </ul>
         </nav>

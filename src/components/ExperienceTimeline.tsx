@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import ResumePDF from '../assets/images/Matthew_Torre_Resume_UPDATED.pdf';
+import ResumePDF from '../assets/images/Matthew_Torre.pdf';
 import { Experience, XpCategory } from '../data/experience';
 import { resolveLogoPath } from '../utils/logos';
 import { useInView } from '../hooks/useInView';
@@ -120,7 +120,7 @@ export const ExperienceTimeline: React.FC<Props> = ({ items, groupByYear = true,
         <a
           className="neon-btn neon-btn--lg"
           href={ResumePDF}
-          download="Matthew_Torre_Resume.pdf"
+          download="Matthew_Torre.pdf"
           aria-label="Download Matthew Torre résumé as PDF"
         >
           Download Résumé
@@ -187,7 +187,7 @@ export const ExperienceItem: React.FC<ItemProps> = ({ item, align, expanded, ind
          style={itemStyle}>
       <div className="xp-node timeline-node" aria-hidden>
         {logoSrc ? (
-          <img src={logoSrc} alt="" onError={() => setLogoSrcIdx(i => Math.min(i + 1, Math.max(0, candidates.length - 1)))} />
+          <img src={logoSrc} alt="" loading="lazy" onError={() => setLogoSrcIdx(i => Math.min(i + 1, Math.max(0, candidates.length - 1)))} />
         ) : (
           <div className="xp-node-fallback" aria-hidden>{abbr(item.org)}</div>
         )}
@@ -205,6 +205,7 @@ export const ExperienceItem: React.FC<ItemProps> = ({ item, align, expanded, ind
           className={`xp-burst ${burstShown ? 'settled' : ''}`}
           alt=""
           aria-hidden
+          loading="lazy"
           onAnimationEnd={() => setBurstShown(true)}
         />
       )}
@@ -213,11 +214,11 @@ export const ExperienceItem: React.FC<ItemProps> = ({ item, align, expanded, ind
         {/* FX layers under content */}
         <div className="xp-card__fx fx-halftone" aria-hidden />
         <div className="xp-card__fx fx-splatter" aria-hidden>
-          <img src={(process.env.PUBLIC_URL || '') + '/svg/splatter-1.svg'} className="fx-splatter-img s1" alt="" />
-          <img src={(process.env.PUBLIC_URL || '') + '/svg/splatter-2.svg'} className="fx-splatter-img s2" alt="" />
+          <img src={(process.env.PUBLIC_URL || '') + '/svg/splatter-1.svg'} className="fx-splatter-img s1" alt="" loading="lazy" />
+          <img src={(process.env.PUBLIC_URL || '') + '/svg/splatter-2.svg'} className="fx-splatter-img s2" alt="" loading="lazy" />
         </div>
-        <img className="xp-card__tape tape--lt" aria-hidden alt="" src={(process.env.PUBLIC_URL || '') + '/svg/tape-corner-left.svg'} />
-        <img className="xp-card__tape tape--rb" aria-hidden alt="" src={(process.env.PUBLIC_URL || '') + '/svg/tape-corner-right.svg'} />
+        <img className="xp-card__tape tape--lt" aria-hidden alt="" loading="lazy" src={(process.env.PUBLIC_URL || '') + '/svg/tape-corner-left.svg'} />
+        <img className="xp-card__tape tape--rb" aria-hidden alt="" loading="lazy" src={(process.env.PUBLIC_URL || '') + '/svg/tape-corner-right.svg'} />
         <button
           id={id}
           className="xp-card-header"

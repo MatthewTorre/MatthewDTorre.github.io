@@ -6,7 +6,6 @@ import Timeline from './components/Timeline';
 import Certifications from './components/Certifications';
 import Skills from './components/Skills';
 import Portfolio from './components/Portfolio';
-import Blog from './components/Blog';
 import Contact from './components/Contact';
 import { useActiveSection } from './hooks/useActiveSection';
 import SpideyWebBackground from './components/SpideyWebBackground';
@@ -26,7 +25,6 @@ function App() {
       <Certifications />
       <Skills />
       <Portfolio />
-      <Blog />
       <Contact />
       <FloatingSocialBar />
     </>

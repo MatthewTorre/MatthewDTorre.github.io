@@ -115,7 +115,7 @@ const ProjectCard: React.FC<CardProps> = ({ idx, inView, project: p, expanded, s
   return (
     <article
       ref={registerRef}
-      className={`verse-card cover-card project-card ${show ? 'reveal' : ''} ${expanded ? 'expanded' : ''}`}
+      className={`verse-card cover-card project-card flip-root ${show ? 'reveal' : ''} ${expanded ? 'expanded' : ''}`}
       style={{ transitionDelay: delay }}
       onClick={onToggle}
       onKeyDown={onKey}
@@ -124,74 +124,73 @@ const ProjectCard: React.FC<CardProps> = ({ idx, inView, project: p, expanded, s
       aria-expanded={expanded}
       aria-controls={descId}
     >
-      <img
-        src={imgSrc}
-        alt={p.title}
-        className={`cover-image ${p.id === 'synced-in' ? 'cover-contain' : ''}`}
-        loading="lazy"
-        onError={() => setSrcIndex(i => Math.min(i + 1, candidates.length - 1))}
-      />
-      <div className="project-meta">
-        <h3 className="card-title">{p.title}</h3>
-        <p className="project-sub">{p.org}{p.org && (p.dates || p.date) ? ' • ' : ''}{p.dates || p.date}</p>
-        {/* Show rich front-side description derived from full body (first paragraph) */}
-        <p className="card-desc line-clamp-4">{(body.split(/\n\n/)[0] || p.snippet || p.summary)}</p>
-        {skills.length ? (
-          <ul className="skills-row" aria-label="Key skills built">
-            {skills.slice(0, 5).map(s => (<li key={s} className="skill-chip" title={s}>{s}</li>))}
-            {skills.length > 5 ? <li className="skill-chip more">+{skills.length - 5}</li> : null}
-          </ul>
-        ) : null}
-        {((p as any).attachments?.length || (p as any).links?.length) ? (
-          <div className="project-links-inline" onClick={(e) => e.stopPropagation()}>
-            {(((p as any).attachments as any[]) ?? (p as any).links ?? []).map((l: any) => (
-              <a key={l.href} className="neon-btn" href={l.href} target="_blank" rel="noopener noreferrer">
-                {l.label}
-              </a>
-            ))}
+      <div className={`flip-inner ${expanded ? 'is-flipped' : ''}`}>
+        <div className="flip-face flip-front project-face">
+          <div className="project-media">
+            <img
+              src={imgSrc}
+              alt={p.title}
+              className={`cover-image ${p.id === 'synced-in' ? 'cover-contain' : ''}`}
+              loading="lazy"
+              onError={() => setSrcIndex(i => Math.min(i + 1, candidates.length - 1))}
+            />
           </div>
-        ) : null}
-        {/* Details toggle to reveal full description without leaving page */}
-        <div>
-          <button
-            type="button"
-            className="neon-btn"
-            onClick={(e) => { e.stopPropagation(); onToggle(); }}
-            aria-expanded={expanded}
-            aria-controls={descId}
-          >
-            {expanded ? 'Hide Details' : 'Details →'}
-          </button>
+          <div className="project-meta">
+            <h3 className="card-title">{p.title}</h3>
+            <p className="project-sub">{p.org}{p.org && (p.dates || p.date) ? ' • ' : ''}{p.dates || p.date}</p>
+            <p className="card-desc line-clamp-3">{(body.split(/\n\n/)[0] || p.snippet || p.summary)}</p>
+            {skills.length ? (
+              <ul className="skills-row" aria-label="Key skills built">
+                {skills.slice(0, 4).map(s => (<li key={s} className="skill-chip" title={s}>{s}</li>))}
+                {skills.length > 4 ? <li className="skill-chip more">+{skills.length - 4}</li> : null}
+              </ul>
+            ) : null}
+            <div className="project-cta-hint">Tap/click to see details</div>
+          </div>
         </div>
-      </div>
-      <div
-        id={descId}
-        role="region"
-        aria-label={`Details for ${p.title}`}
-        className={`project-details-wrap ${expanded ? 'open' : ''}`}
-      >
-        {body && (
-          <p className="card-desc" style={{marginTop: '0.4rem'}}>
-            {body}
-          </p>
-        )}
-        {skills.length ? (
-          <div style={{marginTop: '.6rem'}}>
-            <strong>Key Skills Built</strong>
-            <ul className="skills-row" aria-label="Key skills built">
-              {skills.map(s => (<li key={s} className="skill-chip" title={s}>{s}</li>))}
-            </ul>
+
+        <div
+          id={descId}
+          role="region"
+          aria-label={`Details for ${p.title}`}
+          className="flip-face flip-back project-face"
+        >
+          <div className="project-back">
+            <div className="project-back-header">
+              <h3 className="card-title">{p.title}</h3>
+              <p className="project-sub">{p.org}{p.org && (p.dates || p.date) ? ' • ' : ''}{p.dates || p.date}</p>
+            </div>
+            {body && (
+              <p className="card-desc" style={{marginTop: '0.4rem'}}>
+                {body}
+              </p>
+            )}
+            {skills.length ? (
+              <div className="project-back-skills">
+                <strong>Key Skills</strong>
+                <ul className="skills-row" aria-label="Key skills built">
+                  {skills.map(s => (<li key={s} className="skill-chip" title={s}>{s}</li>))}
+                </ul>
+              </div>
+            ) : null}
+            {((p as any).attachments?.length || (p as any).links?.length) ? (
+              <div className="project-links project-links-inline" onClick={(e) => e.stopPropagation()}>
+                {(((p as any).attachments as any[]) ?? (p as any).links ?? []).map((l: any) => (
+                  <a key={l.href} className="neon-btn" href={l.href} target="_blank" rel="noopener noreferrer">
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
+            <button
+              type="button"
+              className="neon-btn ghost"
+              onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
+            >
+              Back
+            </button>
           </div>
-        ) : null}
-        {((p as any).attachments?.length || (p as any).links?.length) ? (
-          <div className="project-links">
-            {(((p as any).attachments as any[]) ?? (p as any).links ?? []).map((l: any) => (
-              <a key={l.href} className="neon-btn" href={l.href} target="_blank" rel="noopener noreferrer">
-                {l.label}
-              </a>
-            ))}
-          </div>
-        ) : null}
+        </div>
       </div>
     </article>
   );

@@ -52,7 +52,7 @@ const SocialLinks: React.FC = () => {
         </svg>
       </a>
       <a
-        href="https://www.instagram.com/matttwrr/"
+        href="https://www.instagram.com/ascattered.mind/"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Instagram"
@@ -68,4 +68,3 @@ const SocialLinks: React.FC = () => {
 };
 
 export default SocialLinks;
-

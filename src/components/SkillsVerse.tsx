@@ -5,22 +5,41 @@ export default function SkillsVerse({ density = 0.8 }: { density?: number }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
+  const activeRef = useRef(false);
   const reduce = typeof window !== 'undefined' && !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   useEffect(() => {
     const wrap = wrapRef.current;
     const canvas = canvasRef.current;
     if (!wrap || !canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
+    const wrapEl = wrap as HTMLDivElement;
+    const canvasEl = canvas as HTMLCanvasElement;
+    const context = canvasEl.getContext('2d', { alpha: true });
+    if (!(context instanceof CanvasRenderingContext2D)) return;
+    const ctx = context;
 
-    wrap.style.position = 'absolute';
-    wrap.style.inset = '0';
-    wrap.style.pointerEvents = 'none';
-    wrap.style.zIndex = '0';
+    wrapEl.style.position = 'absolute';
+    wrapEl.style.inset = '0';
+    wrapEl.style.pointerEvents = 'none';
+    wrapEl.style.zIndex = '0';
 
     const ro = new ResizeObserver(() => resize());
-    ro.observe(wrap.parentElement || wrap);
+    ro.observe(wrapEl.parentElement || wrapEl);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        activeRef.current = entry.isIntersecting;
+        if (!reduce && activeRef.current && !rafRef.current) {
+          rafRef.current = requestAnimationFrame(draw);
+        }
+        if (!entry.isIntersecting && rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(wrapEl);
 
     function dpr() { return Math.max(1, Math.min(2, window.devicePixelRatio || 1)); }
 
@@ -30,7 +49,7 @@ export default function SkillsVerse({ density = 0.8 }: { density?: number }) {
     let buildings: B[] = [];
 
     function rebuild() {
-      const rect = (wrap.parentElement || wrap).getBoundingClientRect();
+      const rect = (wrapEl.parentElement || wrapEl).getBoundingClientRect();
       const count = Math.floor((rect.width * rect.height) / 26000 * density);
       pts = new Array(Math.max(10, count)).fill(0).map(() => ({
         x: Math.random() * rect.width,
@@ -44,26 +63,28 @@ export default function SkillsVerse({ density = 0.8 }: { density?: number }) {
     }
 
     function resize() {
-      const rect = (wrap.parentElement || wrap).getBoundingClientRect();
+      const rect = (wrapEl.parentElement || wrapEl).getBoundingClientRect();
       const DPR = dpr();
-      canvas.width = Math.max(1, Math.floor(rect.width * DPR));
-      canvas.height = Math.max(1, Math.floor(rect.height * DPR));
-      canvas.style.width = rect.width + 'px';
-      canvas.style.height = rect.height + 'px';
+      canvasEl.width = Math.max(1, Math.floor(rect.width * DPR));
+      canvasEl.height = Math.max(1, Math.floor(rect.height * DPR));
+      canvasEl.style.width = rect.width + 'px';
+      canvasEl.style.height = rect.height + 'px';
       rebuild();
       draw(0);
     }
 
     function draw(ts: number) {
+      if (!canvasEl) return;
+      const c = canvasEl;
       const DPR = dpr();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, c.width, c.height);
 
       // Neon thread web
       for (let i = 0; i < pts.length; i++) {
         const a = pts[i];
         // drift
         a.x += a.vx; a.y += a.vy;
-        const W = canvas.width / DPR, H = canvas.height / DPR;
+        const W = c.width / DPR, H = c.height / DPR;
         if (a.x < 0 || a.x > W) a.vx *= -1;
         if (a.y < 0 || a.y > H) a.vy *= -1;
         // connect to nearest few
@@ -92,7 +113,7 @@ export default function SkillsVerse({ density = 0.8 }: { density?: number }) {
       }
 
       // Glitchy 3D skyline at bottom corners only
-      const H = canvas.height / DPR; const baseY = H - 10;
+      const H = c.height / DPR; const baseY = H - 10;
       for (const b of buildings) {
         const t = ts * 0.008 + b.seed; // slower for perf
         const jx = reduce ? 0 : Math.sin(t) * 2; // horizontal jitter
@@ -167,8 +188,8 @@ export default function SkillsVerse({ density = 0.8 }: { density?: number }) {
 
       // Central burst of colorful shards (inspired by reference)
       if (!reduce) {
-        const cx = (canvas.width / DPR) * 0.5;
-        const cy = (canvas.height / DPR) * 0.6; // slightly below center
+        const cx = (c.width / DPR) * 0.5;
+        const cy = (c.height / DPR) * 0.6; // slightly below center
         const rings = 2;
         for (let r = 0; r < rings; r++) {
           const pieces = 14 + r * 8;
@@ -188,14 +209,18 @@ export default function SkillsVerse({ density = 0.8 }: { density?: number }) {
         }
       }
 
-      if (!reduce) rafRef.current = requestAnimationFrame(draw);
+      if (!reduce && activeRef.current) rafRef.current = requestAnimationFrame(draw);
     }
 
     resize();
-    if (!reduce) rafRef.current = requestAnimationFrame(draw);
+    if (!reduce && activeRef.current) rafRef.current = requestAnimationFrame(draw);
 
-    return () => { ro.disconnect(); if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [density]);
+    return () => {
+      observer.disconnect();
+      ro.disconnect();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [density, reduce]);
 
   return (
     <div ref={wrapRef} className="skills-verse-wrap">
